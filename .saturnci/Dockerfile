@@ -65,11 +65,14 @@ RUN corepack enable
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && rm -rf /usr/local/bundle/cache/*
 
+# Copy package.json and yarn files for JavaScript dependency installation
+COPY package.json yarn.lock .yarnrc.yml ./
+
+# Install JavaScript dependencies into the Docker image
+RUN yarn install
+
 # Copy all application files. Use .dockerignore to exclude unnecessary files.
 COPY . ./
-
-# Note: node_modules will be installed during pre.sh setup into the mounted directory
-# This ensures all parallel test runs can share the same node_modules
 
 # For tests, we don't need to precompile assets during build.
 # Assets will be compiled on-demand or can be precompiled in the test setup.

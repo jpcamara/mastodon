@@ -4,17 +4,14 @@ set -e
 echo "=== Starting pre.sh setup script ==="
 echo "Current directory: $(pwd)"
 
-# Install JavaScript dependencies into mounted directory
-# This ensures all parallel test containers can use the same node_modules
-echo "=== Installing JavaScript dependencies ==="
+# Verify node_modules from Docker image is available via named volume
+echo "=== Verifying node_modules ==="
 if [ -d "node_modules" ]; then
-  echo "✓ node_modules already exists, skipping install"
-  echo "node_modules size: $(du -sh node_modules | cut -f1)"
+  echo "✓ node_modules exists"
+  echo "node_modules size: $(du -sh node_modules 2>/dev/null | cut -f1 || echo 'unable to calculate')"
 else
-  echo "Installing node_modules..."
-  yarn install
-  echo "✓ node_modules installed"
-  echo "node_modules size: $(du -sh node_modules | cut -f1)"
+  echo "✗ ERROR: node_modules not found!"
+  exit 1
 fi
 
 # Prepare the database
