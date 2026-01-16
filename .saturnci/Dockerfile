@@ -65,6 +65,13 @@ RUN corepack enable
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && rm -rf /usr/local/bundle/cache/*
 
+# Copy package.json and yarn files for JavaScript dependency installation
+COPY package.json yarn.lock .yarnrc.yml ./
+
+# Install JavaScript dependencies
+# These will be installed into the Docker image and preserved via anonymous volume
+RUN yarn install
+
 # Copy all application files. Use .dockerignore to exclude unnecessary files.
 COPY . ./
 
