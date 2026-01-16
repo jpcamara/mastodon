@@ -28,6 +28,9 @@ RUN apt-get update && apt-get install -y \
     # Install version control system for dependency management.
     git \
 
+    # Install curl for downloading Node.js setup script.
+    curl \
+
     # Install additional dependencies for Mastodon gems
     libidn-dev \
     libicu-dev \
@@ -58,8 +61,23 @@ RUN apt-get update && apt-get install -y \
     # Clean up package cache to reduce image size.
     && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js 20.x (required for Mastodon)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable Corepack for yarn (Mastodon uses yarn 4.12.0)
+RUN corepack enable
+
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && rm -rf /usr/local/bundle/cache/*
+
+# Copy package.json and yarn files for JavaScript dependency installation
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn ./.yarn
+
+# Install JavaScript dependencies
+RUN yarn install --immutable
 
 # Copy all application files. Use .dockerignore to exclude unnecessary files.
 COPY . ./
