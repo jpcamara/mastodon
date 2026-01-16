@@ -18,19 +18,14 @@ ENV RAILS_ENV=test
 
 # Update the package list to get the latest available packages.
 RUN apt-get update && apt-get install -y \
-
     # Install compilers and build tools needed for native gem compilation.
     build-essential \
-
     # Install PostgreSQL client libraries for database connections.
     libpq-dev \
-
     # Install version control system for dependency management.
     git \
-
     # Install curl for downloading Node.js setup script.
     curl \
-
     # Install additional dependencies for Mastodon gems
     libidn-dev \
     libicu-dev \
@@ -41,7 +36,6 @@ RUN apt-get update && apt-get install -y \
     libyaml-dev \
     pkg-config \
     shared-mime-info \
-
     # libvips for image processing
     libvips42 \
     libvips-dev \
@@ -57,7 +51,6 @@ RUN apt-get update && apt-get install -y \
     libspng-dev \
     libtiff-dev \
     libwebp-dev \
-
     # Clean up package cache to reduce image size.
     && rm -rf /var/lib/apt/lists/*
 
@@ -74,10 +67,10 @@ RUN bundle install && rm -rf /usr/local/bundle/cache/*
 
 # Copy package.json and yarn files for JavaScript dependency installation
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
 
 # Install JavaScript dependencies
-RUN yarn install --immutable
+# Corepack will automatically download and use the correct yarn version
+RUN yarn install
 
 # Copy all application files. Use .dockerignore to exclude unnecessary files.
 COPY . ./

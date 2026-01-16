@@ -32,8 +32,10 @@ services:
     volumes:
       - ../:/app
       - ./database.yml:/app/config/database.yml:ro
+      - /app/node_modules
     depends_on:
       - postgres
+      - redis
       - chrome
 
     # .saturnci/.env is where SaturnCI will put the environment variables
@@ -50,6 +52,8 @@ services:
       DATABASE_PASSWORD: ""
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       RAILS_ENV: test
 
     healthcheck:
@@ -71,6 +75,19 @@ services:
     restart: on-failure
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U saturn"]
+      interval: 10s
+      timeout: 2s
+      retries: 10
+    logging:
+      driver: none
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:6380:6379"
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 2s
       retries: 10
