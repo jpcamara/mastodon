@@ -32,7 +32,6 @@ services:
     volumes:
       - ../:/app
       - ./database.yml:/app/config/database.yml:ro
-      - /app/node_modules
     depends_on:
       - postgres
       - redis
