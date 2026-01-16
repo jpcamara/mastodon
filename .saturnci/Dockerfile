@@ -26,6 +26,8 @@ RUN apt-get update && apt-get install -y \
     git \
     # Install curl for downloading Node.js setup script.
     curl \
+    # Install ffmpeg for video and animated gif processing.
+    ffmpeg \
     # Install additional dependencies for Mastodon gems
     libidn-dev \
     libicu-dev \
